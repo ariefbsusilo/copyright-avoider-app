@@ -1,0 +1,10 @@
+
+ios/* linguist-vendored
+android/* linguist-vendored
+web/* linguist-vendored
+linux/* linguist-vendored
+macos/* linguist-vendored
+windows/* linguist-vendored
+
+*.g.dart linguist-vendored
+*.freezed.dart linguist-vendored
