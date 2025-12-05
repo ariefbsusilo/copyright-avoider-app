@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test - Simple HTML</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin: 0 0 20px 0;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .success {
+            color: #00ff88;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 18px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>✅ SERVER WORKS!</h1>
+        <p class="success">HTML Loading Sukses!</p>
+        <p>Jika Anda melihat halaman ini, berarti:</p>
+        <ul style="text-align: left; display: inline-block; margin: 20px 0;">
+            <li>✅ Server HTTP berjalan normal</li>
+            <li>✅ Browser Anda bisa akses localhost</li>
+            <li>✅ JavaScript diizinkan</li>
+        </ul>
+        <p><strong>Masalahnya: Flutter Web tidak bisa initialize!</strong></p>
+        <button onclick="testFlutter()">🔍 Test Flutter Files</button>
+        <div id="result" style="margin-top: 20px; font-size: 14px;"></div>
+    </div>
+
+    <script>
+        async function testFlutter() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<p>Testing...</p>';
+
+            const files = [
+                'flutter.js',
+                'flutter_bootstrap.js',
+                'main.dart.js',
+                'flutter_service_worker.js'
+            ];
+
+            let html = '<div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: left;">';
+
+            for (const file of files) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    const size = response.headers.get('content-length');
+                    const sizeKB = size ? (parseInt(size) / 1024).toFixed(1) : 'unknown';
+
+                    if (response.ok) {
+                        html += `<p>✅ ${file} - ${sizeKB} KB</p>`;
+                    } else {
+                        html += `<p>❌ ${file} - NOT FOUND (${response.status})</p>`;
+                    }
+                } catch (e) {
+                    html += `<p>❌ ${file} - ERROR: ${e.message}</p>`;
+                }
+            }
+
+            html += '</div>';
+            result.innerHTML = html;
+        }
+
+        // Auto test
+        setTimeout(testFlutter, 500);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copyright Avoider - Learning App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-container {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            max-width: 500px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 30px;
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status {
+            font-size: 16px;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid rgba(0, 255, 0, 0.5);
+        }
+
+        #timer {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #app-container {
+            display: none;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .hide {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-container" id="loading">
+        <div class="spinner"></div>
+        <h1>Copyright Avoider App</h1>
+        <div class="status" id="status">Initializing...</div>
+        <div class="status">⏱️ Time elapsed: <span id="timer">0s</span></div>
+        <div class="status">⚠️ Untuk Tujuan Edukasi</div>
+
+        <div id="error-box" class="error hide">
+            <h3>❌ Loading Failed</h3>
+            <p id="error-message">App tidak bisa load setelah 30 detik</p>
+            <button class="btn" onclick="location.reload()">🔄 Reload</button>
+            <button class="btn" onclick="showDebugInfo()">🔍 Debug Info</button>
+        </div>
+
+        <div id="debug-info" class="error hide" style="text-align: left; font-size: 12px;">
+            <h4>Debug Information:</h4>
+            <p>Browser: <span id="browser"></span></p>
+            <p>Window Size: <span id="windowSize"></span></p>
+            <p>Files Checked:</p>
+            <ul id="filesList"></ul>
+        </div>
+    </div>
+
+    <div id="app-container"></div>
+
+    <script>
+        // Timer
+        let startTime = Date.now();
+        let timerInterval = setInterval(() => {
+            let elapsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('timer').textContent = elapsed + 's';
+
+            // Timeout after 30 seconds
+            if (elapsed >= 30) {
+                clearInterval(timerInterval);
+                showError('App tidak load setelah 30 detik. Mungkin ada masalah dengan build.');
+            }
+        }, 1000);
+
+        // Status updates
+        function updateStatus(msg) {
+            document.getElementById('status').textContent = msg;
+            console.log('[Status]', msg);
+        }
+
+        function showError(msg) {
+            document.getElementById('error-message').textContent = msg;
+            document.getElementById('error-box').classList.remove('hide');
+        }
+
+        function showDebugInfo() {
+            document.getElementById('debug-info').classList.remove('hide');
+            document.getElementById('browser').textContent = navigator.userAgent;
+            document.getElementById('windowSize').textContent = window.innerWidth + 'x' + window.innerHeight;
+
+            // Check files
+            const files = ['flutter.js', 'main.dart.js', 'flutter_bootstrap.js'];
+            const filesList = document.getElementById('filesList');
+            filesList.innerHTML = '';
+
+            files.forEach(file => {
+                fetch(file, { method: 'HEAD' })
+                    .then(r => {
+                        const li = document.createElement('li');
+                        li.textContent = file + ': ' + (r.ok ? '✅ OK' : '❌ NOT FOUND');
+                        filesList.appendChild(li);
+                    })
+                    .catch(e => {
+                        const li = document.createElement('li');
+                        li.textContent = file + ': ❌ ERROR - ' + e.message;
+                        filesList.appendChild(li);
+                    });
+            });
+        }
+
+        // Load Flutter
+        updateStatus('Loading Flutter framework...');
+
+        window.addEventListener('load', function () {
+            updateStatus('Window loaded, checking Flutter...');
+
+            // Check if flutter.js exists
+            if (typeof _flutter === 'undefined') {
+                setTimeout(() => {
+                    if (typeof _flutter === 'undefined') {
+                        showError('flutter.js tidak bisa load. File mungkin corrupt.');
+                        return;
+                    }
+                    loadFlutter();
+                }, 2000);
+            } else {
+                loadFlutter();
+            }
+        });
+
+        function loadFlutter() {
+            try {
+                updateStatus('Starting Flutter engine...');
+
+                _flutter.loader.load({
+                    onEntrypointLoaded: async function (engineInitializer) {
+                        updateStatus('Engine loaded, initializing...');
+
+                        try {
+                            let appRunner = await engineInitializer.initializeEngine({
+                                hostElement: document.getElementById('app-container')
+                            });
+
+                            updateStatus('Running app...');
+                            await appRunner.runApp();
+
+                            // Success!
+                            clearInterval(timerInterval);
+                            updateStatus('✅ App loaded successfully!');
+
+                            setTimeout(() => {
+                                document.getElementById('loading').classList.add('hide');
+                                document.getElementById('app-container').classList.add('show');
+                                document.body.style.background = 'white';
+                            }, 500);
+
+                        } catch (e) {
+                            showError('Error initializing Flutter: ' + e.message);
+                            console.error(e);
+                        }
+                    }
+                });
+            } catch (e) {
+                showError('Error loading Flutter: ' + e.message);
+                console.error(e);
+            }
+        }
+    </script>
+
+    <!-- Load Flutter -->
+    <script src="flutter.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+    <meta name="description" content="Copyright Avoider App - Educational Purpose">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Copyright Avoider">
+    <title>Copyright Avoider - Learning App</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        #loading {
+            text-align: center;
+            color: white;
+        }
+
+        .spinner {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        #flutter-app {
+            display: none;
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <div class="title">Copyright Avoider App</div>
+        <div class="subtitle">Loading<span id="dots">...</span></div>
+        <div style="font-size: 12px; margin-top: 16px; opacity: 0.7;">Untuk Tujuan Edukasi</div>
+    </div>
+
+    <div id="flutter-app"></div>
+
+    <script>
+        // Simple dots animation
+        let dots = 0;
+        setInterval(() => {
+            dots = (dots + 1) % 4;
+            document.getElementById('dots').textContent = '.'.repeat(dots || 1);
+        }, 500);
+
+        // Hide loading when Flutter ready
+        window.addEventListener('flutter-first-frame', () => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('flutter-app').style.display = 'block';
+            document.body.style.background = 'white';
+        });
+    </script>
+
+    <script src="flutter_bootstrap.js" async></script>
+</body>
+
+</html>
