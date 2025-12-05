@@ -1,9 +1,0 @@
-# --- Abaikan Folder Native (Android/iOS) ---
-android/* linguist-vendored
-ios/* linguist-vendored
-macos/* linguist-vendored
-windows/* linguist-vendored
-linux/* linguist-vendored
-
-# --- Abaikan File PowerShell (jika masih ada) ---
-*.ps1 linguist-vendored
